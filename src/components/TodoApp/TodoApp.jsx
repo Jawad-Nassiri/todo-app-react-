@@ -8,11 +8,13 @@ class TodoApp extends Component {
     this.state = {
       todoTitle: "",
       todos: [],
-      todosFilter: 'all'
+      todosFilter: "all",
     };
 
     this.todoTitleHandler = this.todoTitleHandler.bind(this);
     this.addTodoHandler = this.addTodoHandler.bind(this);
+    this.checkTodoHandler = this.checkTodoHandler.bind(this);
+    this.changeFilterHandler = this.changeFilterHandler.bind(this);
   }
 
   todoTitleHandler(event) {
@@ -27,17 +29,29 @@ class TodoApp extends Component {
     };
 
     this.setState((prev) => {
-      return { todos: [...prev.todos, newTodo],  todoTitle: ""};
+      return { todos: [...prev.todos, newTodo], todoTitle: "" };
     });
+  }
 
-    }
-    
-    removeTodoHandler(todoId) {
-        const allTodos = this.state.todos;
-        const filteredTodos = allTodos.filter(todo => todo.id !== todoId)
+  removeTodoHandler(todoId) {
+    const allTodos = this.state.todos;
+    const filteredTodos = allTodos.filter((todo) => todo.id !== todoId);
 
-        this.setState({todos: [...filteredTodos]})
-    }
+    this.setState({ todos: [...filteredTodos] });
+  }
+
+  checkTodoHandler(todoId) {
+    this.setState((prev) => {
+      const updatedTodos = prev.todos.map((todo) =>
+        todo.id === todoId ? { ...todo, status: !todo.status } : todo
+      );
+      return { todos: updatedTodos };
+    });
+  }
+
+  changeFilterHandler(event) {
+    this.setState({ todosFilter: event.target.value });
+  }
 
   render() {
     return (
@@ -53,7 +67,11 @@ class TodoApp extends Component {
           <button className="add-btn" onClick={this.addTodoHandler}>
             Add Todo
           </button>
-          <select className="filter-select">
+          <select
+            className="filter-select"
+            onChange={this.changeFilterHandler}
+            value={this.state.todosFilter}
+          >
             <option value="all">All</option>
             <option value="completed">Completed</option>
             <option value="not-completed">Not Completed</option>
@@ -63,12 +81,102 @@ class TodoApp extends Component {
         <div className="todos-section">
           <h2 className="todos-title">Your Todos</h2>
 
-          {this.state.todos.map((todo) => (
-            <div className="todo-item" key={todo.id}>
-              <span className="todo-text">{todo.title}</span>
+          {this.state.todosFilter === "completed" &&
+            this.state.todos
+              .filter((todo) => todo.status === true)
+              .map((todo) => (
+                <div
+                  className={`todo-item ${
+                    todo.status === true ? "completed" : ""
+                  }`}
+                  key={todo.id}
+                >
+                  <span
+                    className={`todo-text ${
+                      todo.status === true ? "completed" : ""
+                    }`}
+                  >
+                    {todo.title}
+                  </span>
+                  <div className="todo-buttons">
+                    <button
+                      className="check-btn"
+                      onClick={() => this.checkTodoHandler(todo.id)}
+                    >
+                      ✓
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => this.removeTodoHandler(todo.id)}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              ))}
+          
+
+          {this.state.todosFilter === "not-completed" &&
+            this.state.todos
+              .filter((todo) => todo.status === false)
+              .map((todo) => (
+                <div
+                  className={`todo-item ${
+                    todo.status === true ? "completed" : ""
+                  }`}
+                  key={todo.id}
+                >
+                  <span
+                    className={`todo-text ${
+                      todo.status === true ? "completed" : ""
+                    }`}
+                  >
+                    {todo.title}
+                  </span>
+                  <div className="todo-buttons">
+                    <button
+                      className="check-btn"
+                      onClick={() => this.checkTodoHandler(todo.id)}
+                    >
+                      ✓
+                    </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => this.removeTodoHandler(todo.id)}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              ))}
+          
+          
+
+          {this.state.todosFilter === "all" && this.state.todos.map((todo) => (
+            <div
+              className={`todo-item ${todo.status === true ? "completed" : ""}`}
+              key={todo.id}
+            >
+              <span
+                className={`todo-text ${
+                  todo.status === true ? "completed" : ""
+                }`}
+              >
+                {todo.title}
+              </span>
               <div className="todo-buttons">
-                <button className="check-btn">✓</button>
-                      <button className="delete-btn" onClick={() => this.removeTodoHandler(todo.id)}>✕</button>
+                <button
+                  className="check-btn"
+                  onClick={() => this.checkTodoHandler(todo.id)}
+                >
+                  ✓
+                </button>
+                <button
+                  className="delete-btn"
+                  onClick={() => this.removeTodoHandler(todo.id)}
+                >
+                  ✕
+                </button>
               </div>
             </div>
           ))}

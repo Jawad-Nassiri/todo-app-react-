@@ -67,6 +67,15 @@
   color: #333;
 }
 
+.todo-item.completed{
+  opacity: 0.9;
+  border: 1px solid green;
+}
+
+.todo-text.completed {
+  text-decoration: line-through;
+}
+
 .todo-item.completed .todo-text {
   text-decoration: line-through;
   color: #999;
